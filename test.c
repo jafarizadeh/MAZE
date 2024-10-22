@@ -129,6 +129,17 @@ void generateMaze(int maze[HEIGHT][WIDTH], int visited[HEIGHT][WIDTH]) {
     }
 }
 
+// Fonction pour vérifier s'il est possible de se déplacer dans une certaine direction sans traverser de mur
+int canMove(int maze[HEIGHT][WIDTH], int x, int y, int direction) {
+    switch (direction) {
+        case 0: return maze[y][x] & 1;  // Haut
+        case 1: return maze[y][x] & 2;  // Droite
+        case 2: return maze[y][x] & 4;  // Bas
+        case 3: return maze[y][x] & 8;  // Gauche
+    }
+    return 0;
+}
+
 // Fonction pour trouver le chemin le plus court avec BFS
 int findShortestPath(int maze[HEIGHT][WIDTH], int path[HEIGHT][WIDTH], Cell start, Cell end) {
     Queue queue;
@@ -158,15 +169,11 @@ int findShortestPath(int maze[HEIGHT][WIDTH], int path[HEIGHT][WIDTH], Cell star
             int nx = x + dx[i];
             int ny = y + dy[i];
 
-            if (nx >= 0 && ny >= 0 && nx < WIDTH && ny < HEIGHT && !path[ny][nx]) {
-                if ((i == 0 && (maze[y][x] & 1)) || 
-                    (i == 1 && (maze[y][x] & 2)) || 
-                    (i == 2 && (maze[y][x] & 4)) || 
-                    (i == 3 && (maze[y][x] & 8))) {
-                    path[ny][nx] = 1;
-                    enqueue(&queue, (Cell){nx, ny});
-                    parent[ny][nx] = current;
-                }
+            // Vérifier si le déplacement est possible et sans traverser de mur
+            if (nx >= 0 && ny >= 0 && nx < WIDTH && ny < HEIGHT && !path[ny][nx] && canMove(maze, x, y, i)) {
+                path[ny][nx] = 1;
+                enqueue(&queue, (Cell){nx, ny});
+                parent[ny][nx] = current;
             }
         }
     }
