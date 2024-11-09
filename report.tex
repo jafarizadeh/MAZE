@@ -1,0 +1,183 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\begin{document}
+
+\title{Data Structure Description and Formal Specification}
+\author{Project Group}
+\date{}
+
+\maketitle
+
+\section*{Introduction}
+
+This document describes the data structure chosen for representing a maze in our project, along with its formal specification. The maze is represented using a two-dimensional matrix of integers, where each integer encodes the presence of walls and other properties of a cell using bit manipulation.
+
+\section*{Data Structure Description}
+
+\subsection*{Maze Representation}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Maze Matrix}: The maze is represented as a matrix $\texttt{maze}[h][w]$, where $h$ is the height and $w$ is the width.
+    \item \textbf{Cell Representation}: Each cell is an integer using bits to represent walls and properties.
+\end{itemize}
+
+\subsection*{Bit Encoding for Cell Properties}
+
+Each cell uses bits to represent the presence of walls and special properties:
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Bit 0 (Value 1)}: Wall on the \textbf{North} side.
+    \item \textbf{Bit 1 (Value 2)}: Wall on the \textbf{East} side.
+    \item \textbf{Bit 2 (Value 4)}: Wall on the \textbf{South} side.
+    \item \textbf{Bit 3 (Value 8)}: Wall on the \textbf{West} side.
+    \item \textbf{Bit 4 (Value 16)}: \textbf{Entrance} flag.
+\end{itemize}
+
+\subsection*{Example}
+
+A cell with walls on the North and East sides and marked as an entrance has a value:
+
+\[
+\text{Cell Value} = 1 \ (\text{North wall}) + 2 \ (\text{East wall}) + 16 \ (\text{Entrance}) = 19
+\]
+
+\section*{Formal Specification}
+
+\subsection*{Data Type}
+
+\begin{lstlisting}[language=C]
+typedef struct {
+    int **cells;  // 2D array of cell integers
+    int height;   // Number of rows
+    int width;    // Number of columns
+} Maze;
+\end{lstlisting}
+
+\subsection*{Function Specifications}
+
+\subsubsection*{Function: \texttt{Maze* init(int h, int w)}}
+
+\textbf{Description}: Initializes a maze of height $h$ and width $w$.
+
+\textbf{Preconditions}:
+\begin{itemize}[noitemsep]
+    \item $h > 0$, $w > 0$.
+\end{itemize}
+
+\textbf{Postconditions}:
+\begin{itemize}[noitemsep]
+    \item Returns a pointer to a \texttt{Maze} with all walls set.
+    \item No entrance is set.
+\end{itemize}
+
+\subsubsection*{Function: \texttt{void destroy(Maze* maze)}}
+
+\textbf{Description}: Deallocates the maze.
+
+\textbf{Preconditions}:
+\begin{itemize}[noitemsep]
+    \item \texttt{maze} is not \texttt{NULL}.
+\end{itemize}
+
+\textbf{Postconditions}:
+\begin{itemize}[noitemsep]
+    \item Memory associated with \texttt{maze} is freed.
+\end{itemize}
+
+\subsubsection*{Function: \texttt{void open\_wall(Maze* maze, int x, int y, int dir)}}
+
+\textbf{Description}: Removes the wall in direction \texttt{dir} at cell $(x, y)$.
+
+\textbf{Preconditions}:
+\begin{itemize}[noitemsep]
+    \item $0 \leq x < \texttt{maze->width}$.
+    \item $0 \leq y < \texttt{maze->height}$.
+    \item \texttt{dir} is one of \texttt{NORTH}, \texttt{EAST}, \texttt{SOUTH}, \texttt{WEST}.
+\end{itemize}
+
+\textbf{Postconditions}:
+\begin{itemize}[noitemsep]
+    \item The wall in direction \texttt{dir} at $(x, y)$ is removed.
+    \item The corresponding wall in the adjacent cell is also removed to maintain symmetry.
+\end{itemize}
+
+\subsubsection*{Function: \texttt{void set\_entrance(Maze* maze, int x, int y)}}
+
+\textbf{Description}: Marks cell $(x, y)$ as an entrance.
+
+\textbf{Preconditions}:
+\begin{itemize}[noitemsep]
+    \item $0 \leq x < \texttt{maze->width}$.
+    \item $0 \leq y < \texttt{maze->height}$.
+\end{itemize}
+
+\textbf{Postconditions}:
+\begin{itemize}[noitemsep]
+    \item Entrance flag is set for cell $(x, y)$.
+\end{itemize}
+
+\subsubsection*{Function: \texttt{bool is\_open(Maze* maze, int x, int y, int dir)}}
+
+\textbf{Description}: Checks if there is no wall in direction \texttt{dir} at cell $(x, y)$.
+
+\textbf{Preconditions}:
+\begin{itemize}[noitemsep]
+    \item Same as for \texttt{open\_wall}.
+\end{itemize}
+
+\textbf{Postconditions}:
+\begin{itemize}[noitemsep]
+    \item Returns \texttt{true} if the wall is open; \texttt{false} otherwise.
+\end{itemize}
+
+\subsection*{Bit Manipulation Operations}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Set a Bit} (e.g., mark wall present):
+    \[
+    \texttt{cell} \mathrel{|}= (1 \ll \texttt{bit\_pos});
+    \]
+    \item \textbf{Clear a Bit} (e.g., remove wall):
+    \[
+    \texttt{cell} \mathrel{\&}= \sim(1 \ll \texttt{bit\_pos});
+    \]
+    \item \textbf{Check a Bit}:
+    \[
+    (\texttt{cell} \& (1 \ll \texttt{bit\_pos})) \neq 0
+    \]
+\end{itemize}
+
+\subsection*{Direction Enumeration}
+
+\begin{lstlisting}[language=C]
+typedef enum {
+    NORTH = 0,  // Bit position 0
+    EAST  = 1,  // Bit position 1
+    SOUTH = 2,  // Bit position 2
+    WEST  = 3   // Bit position 3
+} Direction;
+\end{lstlisting}
+
+\section*{Invariants and Constraints}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Symmetry}: If a wall is open between two cells, it must be open in both directions.
+    \item \textbf{Boundary Conditions}: Edge cells have walls where there are no adjacent cells.
+    \item \textbf{Entrance and Exit}:
+    \begin{itemize}[noitemsep]
+        \item At least one entrance must be set.
+        \item Exit is conventionally at cell $(\texttt{width}-1, \texttt{height}-1)$.
+    \end{itemize}
+\end{itemize}
+
+\section*{Conclusion}
+
+The chosen data structure efficiently represents the maze using bit manipulation within integers, allowing for quick access and modification of cell properties. The formal specification ensures clarity in implementation and consistency across operations.
+
+\end{document}
