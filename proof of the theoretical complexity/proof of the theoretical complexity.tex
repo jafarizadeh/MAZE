@@ -1,0 +1,101 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\begin{document}
+
+\title{Proof of the Theoretical Complexity of the Maze Resolution Algorithm}
+\author{}
+\date{}
+\maketitle
+
+\section*{Introduction}
+
+In this report, we provide a proof of the theoretical complexity of our maze resolution algorithm. We have implemented the Breadth-First Search (BFS) algorithm to find the shortest path from the entrance to the exit in a maze. We will demonstrate that the time complexity of this algorithm is linear with respect to the number of cells in the maze, specifically \(O(V + E)\), where \(V\) is the number of vertices (cells) and \(E\) is the number of edges (open paths between cells).
+
+\section*{Maze as a Graph}
+
+A maze can be represented as an undirected graph \(G = (V, E)\), where:
+
+\begin{itemize}
+    \item Each cell in the maze corresponds to a vertex \(v \in V\).
+    \item An edge \(e \in E\) exists between two vertices if the corresponding cells are adjacent and there is no wall between them.
+\end{itemize}
+
+Since each cell can have up to four neighbors (North, East, South, West), the maximum degree of any vertex is 4.
+
+\section*{Breadth-First Search (BFS) Algorithm}
+
+BFS explores the graph level by level, starting from the entrance cell. It uses a queue to keep track of the next vertices to visit and marks each visited vertex to avoid revisiting.
+
+\subsection*{Algorithm Steps}
+
+\begin{enumerate}
+    \item Initialize a queue \(Q\) and enqueue the entrance cell.
+    \item Mark the entrance cell as visited.
+    \item While \(Q\) is not empty:
+    \begin{enumerate}
+        \item Dequeue a cell \(u\) from \(Q\).
+        \item For each unvisited neighbor \(v\) of \(u\):
+        \begin{enumerate}
+            \item Mark \(v\) as visited.
+            \item Set the predecessor of \(v\) to \(u\) (for path reconstruction).
+            \item Enqueue \(v\) into \(Q\).
+        \end{enumerate}
+    \end{enumerate}
+\end{enumerate}
+
+\section*{Complexity Analysis}
+
+\subsection*{Time Complexity}
+
+The time complexity of BFS on a graph \(G = (V, E)\) is \(O(V + E)\). This is because:
+
+\begin{itemize}
+    \item Each vertex \(v \in V\) is enqueued and dequeued at most once.
+    \item The algorithm examines all edges \(e \in E\) adjacent to each vertex.
+\end{itemize}
+
+\subsubsection*{Detailed Proof}
+
+\begin{itemize}
+    \item \textbf{Initialization:} Enqueuing the entrance cell takes constant time \(O(1)\).
+    \item \textbf{Processing Vertices:} Each vertex is dequeued exactly once. Since there are \(V\) vertices, the total time for dequeuing is \(O(V)\).
+    \item \textbf{Exploring Edges:} For each dequeued vertex \(u\), we examine its adjacent edges. The sum of the degrees of all vertices is \(2E\) (by the Handshaking Lemma for undirected graphs). Therefore, the total time spent exploring edges is \(O(E)\).
+\end{itemize}
+
+Thus, the overall time complexity is \(O(V + E)\).
+
+\subsection*{Space Complexity}
+
+The space complexity of BFS is \(O(V)\), due to:
+
+\begin{itemize}
+    \item The queue \(Q\) can hold at most \(V\) vertices.
+    \item The visited array or marker requires \(O(V)\) space.
+    \item The predecessor array for path reconstruction also requires \(O(V)\) space.
+\end{itemize}
+
+\section*{Application to the Maze}
+
+In the context of the maze:
+
+\begin{itemize}
+    \item \(V = h \times w\), where \(h\) is the height and \(w\) is the width of the maze.
+    \item Each cell (vertex) has up to 4 edges (to its North, East, South, and West neighbors if there are no walls).
+    \item The number of edges \(E\) is less than or equal to \(2V\), since each cell can have up to 4 edges, but each edge is shared between two cells.
+\end{itemize}
+
+Therefore, both \(V\) and \(E\) are proportional to the number of cells in the maze.
+
+\subsection*{Time Complexity in the Maze}
+
+Since \(E = O(V)\) in a maze, the time complexity simplifies to \(O(V)\).
+
+\subsection*{Conclusion}
+
+Our BFS-based maze resolution algorithm has a time complexity of \(O(V)\), where \(V\) is the number of cells in the maze. This linear complexity ensures that the algorithm is efficient and scalable for mazes of varying sizes.
+
+\end{document}
+```
