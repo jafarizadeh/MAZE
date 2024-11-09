@@ -1,0 +1,122 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{geometry}
+\usepackage{hyperref}
+\geometry{margin=1in}
+
+\begin{document}
+
+\title{Description of the Chosen Data Structure and Its Formal Specification}
+\author{}
+\date{}
+\maketitle
+
+\section*{Introduction}
+
+In this report, we present the data structure selected for representing a maze in our project, along with its formal specification. The objective was to design a lightweight and efficient structure that allows easy manipulation and rapid access to cell information, which is crucial for maze generation and pathfinding algorithms.
+
+\section*{Maze Representation}
+
+We represent the maze as a two-dimensional matrix of integers. Each integer in the matrix corresponds to a cell in the maze and encodes multiple boolean properties using bitwise operations. This approach minimizes memory usage and enables quick querying and updating of cell properties.
+
+\subsection*{Bitwise Encoding of Cell Properties}
+
+Each cell uses bits to represent the presence of walls and special markers. The significance of each bit (from least significant to most significant) is as follows:
+
+\begin{itemize}
+    \item \textbf{Bit 0} (\(1\)): Wall on the \textbf{North} side.
+    \item \textbf{Bit 1} (\(2\)): Wall on the \textbf{East} side.
+    \item \textbf{Bit 2} (\(4\)): Wall on the \textbf{South} side.
+    \item \textbf{Bit 3} (\(8\)): Wall on the \textbf{West} side.
+    \item \textbf{Bit 4} (\(16\)): Cell is an \textbf{Entrance}.
+    \item \textbf{Bit 5} (\(32\)): Cell is an \textbf{Exit}.
+    \item \textbf{Bit 6} (\(64\)): Cell has been \textbf{Visited}.
+    \item \textbf{Bit 7} (\(128\)): Cell is part of the \textbf{Path}.
+\end{itemize}
+
+Using bitwise operations allows efficient checking and modification of these properties for any cell.
+
+\section*{Formal Specification}
+
+We define the maze data structure and its associated operations as follows.
+
+\subsection*{Data Types}
+
+\begin{itemize}
+    \item \textbf{Maze}: The maze data structure.
+    \item \textbf{Height}, \textbf{Width}: Positive integers representing the maze dimensions.
+    \item \textbf{X}, \textbf{Y}: Integers representing cell coordinates.
+    \item \textbf{Orientation}: One of \(\{\text{North}, \text{East}, \text{South}, \text{West}\}\).
+    \item \textbf{Boolean}: A boolean value (\texttt{True} or \texttt{False}).
+\end{itemize}
+
+\subsection*{Function Specifications}
+
+\begin{enumerate}
+    \item \(\text{init}(h: \text{Height}, w: \text{Width}) \rightarrow \text{Maze}\)
+
+    Initializes a new maze with height \(h\) and width \(w\).
+
+    \item \(\text{open\_wall}(m: \text{Maze}, x: \text{X}, y: \text{Y}, o: \text{Orientation}) \rightarrow \text{Maze}\)
+
+    Removes the wall in cell \((x, y)\) in the direction \(o\).
+
+    \item \(\text{set\_entrance}(m: \text{Maze}, x: \text{X}, y: \text{Y}) \rightarrow \text{Maze}\)
+
+    Marks cell \((x, y)\) as the entrance.
+
+    \item \(\text{set\_exit}(m: \text{Maze}, x: \text{X}, y: \text{Y}) \rightarrow \text{Maze}\)
+
+    Marks cell \((x, y)\) as the exit.
+
+    \item \(\text{divide}(m: \text{Maze}) \rightarrow (\text{Maze}, \text{Maze})\)
+
+    Divides the maze \(m\) into two sub-mazes.
+
+    \item \(\text{fusion}(m_1: \text{Maze}, m_2: \text{Maze}, o: \text{Orientation}) \rightarrow \text{Maze}\)
+
+    Merges mazes \(m_1\) and \(m_2\) along orientation \(o\).
+
+    \item \(\text{destroy}(m: \text{Maze}) \rightarrow \text{Void}\)
+
+    Deallocates memory associated with maze \(m\).
+
+    \item \(\text{is\_open}(m: \text{Maze}, x: \text{X}, y: \text{Y}, o: \text{Orientation}) \rightarrow \text{Boolean}\)
+
+    Returns \texttt{True} if the wall in direction \(o\) at cell \((x, y)\) is open.
+
+    \item \(\text{is\_entrance}(m: \text{Maze}, x: \text{X}, y: \text{Y}) \rightarrow \text{Boolean}\)
+
+    Returns \texttt{True} if cell \((x, y)\) is the entrance.
+
+    \item \(\text{is\_exit}(m: \text{Maze}, x: \text{X}, y: \text{Y}) \rightarrow \text{Boolean}\)
+
+    Returns \texttt{True} if cell \((x, y)\) is the exit.
+
+    \item \(\text{size}(m: \text{Maze}) \rightarrow (\text{Height}, \text{Width})\)
+
+    Returns the dimensions of maze \(m\).
+\end{enumerate}
+
+\subsection*{Preconditions and Postconditions}
+
+\begin{itemize}
+    \item \textbf{Preconditions}:
+    \begin{itemize}
+        \item Coordinates \(x\) and \(y\) must be within maze bounds: \(0 \leq x < \text{Width}\), \(0 \leq y < \text{Height}\).
+        \item Orientation \(o\) must be valid: \(o \in \{\text{North}, \text{East}, \text{South}, \text{West}\}\).
+    \end{itemize}
+    \item \textbf{Postconditions}:
+    \begin{itemize}
+        \item After \(\text{open\_wall}\), the wall at \((x, y)\) in direction \(o\) is removed, and the corresponding wall in the adjacent cell is updated to maintain symmetry.
+        \item After \(\text{set\_entrance}\) or \(\text{set\_exit}\), cell \((x, y)\) is marked appropriately.
+        \item \(\text{divide}\) returns two valid sub-mazes that together represent the original maze.
+        \item \(\text{fusion}\) returns a maze that combines \(m_1\) and \(m_2\) along \(o\).
+    \end{itemize}
+\end{itemize}
+
+\section*{Conclusion}
+
+The selected data structure efficiently represents the maze using a compact matrix of integers and bitwise encoding. This design facilitates quick access and modification of cell properties, which is essential for the maze generation and solving algorithms. The formal specification provides a clear interface and ensures the correct manipulation of the maze through well-defined operations.
+
+\end{document}
